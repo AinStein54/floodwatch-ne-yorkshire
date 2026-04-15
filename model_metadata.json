@@ -1,0 +1,51 @@
+{
+  "model_name": "XGBoost",
+  "model_class": "XGBClassifier",
+  "classes": {
+    "0": "Low",
+    "1": "Medium",
+    "2": "High"
+  },
+  "test_accuracy": 0.8409,
+  "test_f1_weighted": 0.8391,
+  "train_test_gap": 0.0232,
+  "n_features": 19,
+  "feature_cols": [
+    "latitude",
+    "longitude",
+    "temp_mean",
+    "temp_max",
+    "temp_min",
+    "precipitation_sum",
+    "rain_sum",
+    "snowfall_sum",
+    "wind_speed_max",
+    "wind_gusts_max",
+    "humidity_mean",
+    "soil_moisture_mean",
+    "suitability_County to Town",
+    "suitability_Street to Parcels of land",
+    "town_Bradford",
+    "town_Doncaster",
+    "town_Leeds",
+    "town_Newcastle upon Tyne",
+    "town_Sheffield"
+  ],
+  "towns": [
+    "Bradford",
+    "Doncaster",
+    "Leeds",
+    "Newcastle upon Tyne",
+    "Sheffield"
+  ],
+  "suitability_types": [
+    "County to Town",
+    "Street to Parcels of land"
+  ],
+  "target_order": [
+    "Low",
+    "Medium",
+    "High"
+  ],
+  "training_region": "North East & Yorkshire, UK"
+}

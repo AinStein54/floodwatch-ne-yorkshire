@@ -1,0 +1,21 @@
+[
+  "latitude",
+  "longitude",
+  "temp_mean",
+  "temp_max",
+  "temp_min",
+  "precipitation_sum",
+  "rain_sum",
+  "snowfall_sum",
+  "wind_speed_max",
+  "wind_gusts_max",
+  "humidity_mean",
+  "soil_moisture_mean",
+  "suitability_County to Town",
+  "suitability_Street to Parcels of land",
+  "town_Bradford",
+  "town_Doncaster",
+  "town_Leeds",
+  "town_Newcastle upon Tyne",
+  "town_Sheffield"
+]
