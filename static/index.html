@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FloodWatch — NE &amp; Yorkshire</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+</head>
+<body>
+
+  <!-- ── HEADER ─────────────────────────────────────────────────────────── -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="logo">
+        <svg class="logo-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 32 Q12 24 18 32 Q24 40 30 32 Q36 24 42 32" stroke="#38bdf8" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M6 38 Q12 30 18 38 Q24 46 30 38 Q36 30 42 38" stroke="#38bdf8" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5"/>
+          <path d="M24 6 L24 20 M17 10 L24 6 L31 10" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="24" cy="6" r="2" fill="#38bdf8"/>
+        </svg>
+        <div>
+          <h1>FloodWatch</h1>
+          <span class="logo-sub">NE &amp; Yorkshire Flood Risk Predictor</span>
+        </div>
+      </div>
+      <div id="model-badge" class="model-badge" title="ML model info">
+        <span class="badge-dot"></span>
+        <span id="model-name-badge">Loading model…</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── CONTROLS ───────────────────────────────────────────────────────── -->
+  <main class="main-content">
+    <section class="controls-card">
+      <h2 class="section-title">Configure Prediction</h2>
+      <div class="controls-grid">
+
+        <div class="control-group">
+          <label for="town-select">📍 Town</label>
+          <select id="town-select">
+            <option value="">— Select town —</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label for="suit-select">🏘️ Suitability</label>
+          <select id="suit-select">
+            <option value="">— Select type —</option>
+          </select>
+        </div>
+
+        <div class="control-group control-btn-group">
+          <button id="forecast-btn" class="btn-primary" disabled>
+            <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon">
+              <path d="M9 12l-2-2 1.4-1.4L9 9.2l3.6-3.6L14 7l-5 5z"/>
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-2a6 6 0 100-12 6 6 0 000 12z" clip-rule="evenodd"/>
+            </svg>
+            Get 7-Day Forecast
+          </button>
+        </div>
+      </div>
+      <div id="status-bar" class="status-bar hidden">
+        <div class="spinner"></div>
+        <span id="status-text">Fetching weather data…</span>
+      </div>
+      <div id="error-bar" class="error-bar hidden">
+        <span>⚠️ </span><span id="error-text"></span>
+      </div>
+    </section>
+
+    <!-- ── SUMMARY RIBBON ─────────────────────────────────────────────── -->
+    <section id="summary-section" class="summary-section hidden">
+      <div class="summary-grid">
+        <div class="summary-card" id="sum-location">
+          <span class="sum-icon">📍</span>
+          <div><div class="sum-label">Location</div><div class="sum-value" id="sum-loc-val">—</div></div>
+        </div>
+        <div class="summary-card" id="sum-peak">
+          <span class="sum-icon" id="sum-peak-icon">⚠️</span>
+          <div><div class="sum-label">Peak Risk</div><div class="sum-value" id="sum-peak-val">—</div></div>
+        </div>
+        <div class="summary-card" id="sum-high-days">
+          <span class="sum-icon">📅</span>
+          <div><div class="sum-label">High-Risk Days</div><div class="sum-value" id="sum-high-val">—</div></div>
+        </div>
+        <div class="summary-card" id="sum-model">
+          <span class="sum-icon">🤖</span>
+          <div><div class="sum-label">Model</div><div class="sum-value" id="sum-model-val">—</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 7-DAY FORECAST CARDS ────────────────────────────────────────── -->
+    <section id="forecast-section" class="forecast-section hidden">
+      <h2 class="section-title">7-Day Forecast</h2>
+      <div id="forecast-cards" class="forecast-cards"></div>
+    </section>
+
+    <!-- ── D3 CHART ───────────────────────────────────────────────────── -->
+    <section id="chart-section" class="chart-section hidden">
+      <h2 class="section-title">Risk Probability Over 7 Days</h2>
+      <p class="chart-subtitle">Grouped bars show model probability for each flood risk class per day</p>
+      <div id="risk-chart"></div>
+
+      <h2 class="section-title" style="margin-top:2.5rem">Weather Parameters</h2>
+      <p class="chart-subtitle">Precipitation, temperature range and humidity over the forecast window</p>
+      <div id="weather-chart"></div>
+    </section>
+
+    <!-- ── ABOUT ─────────────────────────────────────────────────────── -->
+    <section class="about-card">
+      <h3>About this tool</h3>
+      <p>
+        This app uses a machine learning model trained on historic flood risk records
+        for <strong>North East &amp; Yorkshire</strong> combined with weather data from
+        <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>.
+        The 7-day forecast is fetched in real time and fed to the model to estimate flood likelihood
+        for each day.
+      </p>
+      <div class="risk-legend">
+        <span class="legend-item low">● Low</span>
+        <span class="legend-item medium">● Medium</span>
+        <span class="legend-item high">● High</span>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <span>FloodWatch · ML model trained on open Environment Agency data</span>
+    <span>Weather: <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> (free, no API key)</span>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
